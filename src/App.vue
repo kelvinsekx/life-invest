@@ -1,67 +1,33 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import CxInput from './components/CxInput.vue'
+import IconSearch from './components/icons/IconSearch.vue'
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <div class="container max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <header>
+      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+      <h1 class="text-4xl font-bold mb-6 tracking-tight">Stock Tracker</h1>
+    </header>
 
-    <div>
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
+    <form class="relative flex gap-2">
+      <div class="relative flex-1">
+        <CxInput
+          type="text"
+          placeholder="Search by ticker symbol (e.g., AAPL, MSFT, GOOGL)"
+          value=""
+          class="pr-10"
+        />
+      </div>
+      <button
+        type="submit"
+        class="bg-[#222] text-white flex items-center rounded-md px-3 py-1 gap-x-2"
+      >
+        <IconSearch class="h-4 w-4 mr-2" />
+        Search
+      </button>
+    </form>
 
-  <RouterView />
+    <RouterView />
+  </div>
 </template>
-
-<style scoped>
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
