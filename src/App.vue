@@ -4,7 +4,7 @@ import IconSearch from './components/icons/IconSearch.vue'
 </script>
 
 <template>
-  <div class="container max-w-6xl mx-auto px-4 py-8 space-y-6">
+  <div class="container max-w-6xl mx-auto px-4 pb-8 space-y-6">
     <header>
       <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
       <h1 class="text-4xl font-bold mb-6 tracking-tight">Stock Tracker</h1>
