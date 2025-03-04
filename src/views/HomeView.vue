@@ -117,7 +117,7 @@ onMounted(async () => {
     loading.value = false
     setTimeout(() => {
       chartjsINIT()
-    }, 1100)
+    }, 1000)
   }
 })
 </script>
