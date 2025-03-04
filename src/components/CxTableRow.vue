@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StockType } from '@/types/customer'
+import type { StockType } from '@/types/stock'
 /** icons */
 import IconTrendingDown from '../components/icons/IconTrendingDown.vue'
 import IconTrendingUp from '../components/icons/IconTrendingUp.vue'
