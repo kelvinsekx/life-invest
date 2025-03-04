@@ -12,6 +12,8 @@ export const useStocksStore = defineStore('stock', () => {
   const stocks = ref<{ [key: string]: StockType }>({})
   const waitlists = ref<{ [key: string]: StockType }>({})
   const filterResults = ref<{ [key: string]: StockType }>({})
+  const trendsResults = ref<{ [key: string]: StockType }>({})
+
   const searchQuery = ref('')
 
   let timeoutID: number | null = null
@@ -51,39 +53,22 @@ export const useStocksStore = defineStore('stock', () => {
     }
   }
 
-  const fetchTrends = function (numOfDays = 7) {
-    // Calculate timestamps for the past {{numOfDays}} days
-    const endDate = new Date()
-    const startDate = new Date()
-    startDate.setDate(endDate.getDate() - numOfDays)
-
-    const fromTimestamp = Math.floor(startDate.getTime() / 1000)
-    const toTimestamp = Math.floor(endDate.getTime() / 1000)
-
-    const tickers = pickFilters()
+  const fetchTrends = function () {
+    const tickers = pickFilters(2)
 
     try {
       for (let index = 0; index < tickers.length; index++) {
         const key = tickers[index]
 
         fetch(
-          `https://finnhub.io/api/v1/stock/candle?symbol=${key}&resolution=D&from=${fromTimestamp}&to=${toTimestamp}&token=${import.meta.env.VITE_FINNHUB_API_KEY}`,
+          `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${key}&apikey=${import.meta.env.VITE_FINNHUB_API_KEY}`,
         )
           .then((response) => response.json())
+          .then((res) => res['Time Series (Daily)'])
           .then((data) => {
-            const timestamps = data.t // Array of timestamps
-            const closePrices = data.c // Array of closing prices
-
-            // Convert timestamps to readable dates
-            const dates = timestamps.map(
-              (ts: number) => new Date(ts * 1000).toISOString().split('T')[0],
-            )
-
-            // Display the stock prices
-            dates.forEach((date: string, index: number) => {
-              console.log(`${date}: $${closePrices[index].toFixed(2)}`)
-            })
+            trendsResults.value[key] = data
           })
+          .then(() => console.log(trendsResults))
       }
     } catch (error) {
       console.error('Error fetching data:', error)

@@ -28,7 +28,7 @@ onMounted(async () => {
   try {
     loading.value = true
     await store.fetchStocks()
-    // await store.fetchTrends()
+    await store.fetchTrends()
     stocks.value = store.stocks
   } catch (error) {
     console.error('Error fetching stocks:', error)
