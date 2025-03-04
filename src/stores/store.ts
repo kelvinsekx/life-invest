@@ -102,6 +102,7 @@ export const useStocksStore = defineStore('stock', () => {
 
   const setSearchQuery = function (query: string) {
     searchQuery.value = query
+    console.log(query)
   }
 
   return {

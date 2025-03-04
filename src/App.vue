@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import IconSearch from './components/icons/IconSearch.vue'
 
+import { useStocksStore } from './stores/store.ts'
+
 const search = ref('')
+const store = useStocksStore()
 </script>
 
 <template>
@@ -19,7 +23,7 @@ const search = ref('')
           placeholder="Search by ticker symbol (e.g., AAPL, MSFT, GOOGL)"
           value=""
           v-model="search"
-          @input="customersStore.setSearchQuery(search)"
+          @input="store.setSearchQuery(search)"
         />
       </div>
       <button
