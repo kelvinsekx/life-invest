@@ -6,7 +6,7 @@ import IconTrendingUp from '../components/icons/IconTrendingUp.vue'
 
 defineProps({
   stocks: {
-    type: Object<{ [key: string]: StockType }>,
+    type: Object as PropType<{ [key: string]: StockType }>,
   },
   activeIndex: {
     type: String,
