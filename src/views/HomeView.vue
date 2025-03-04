@@ -27,7 +27,7 @@ const tabs = ['stocks', 'watchlists']
 const store = useStocksStore()
 
 /** chartjs stuff */
-const chartRef = ref(null)
+const chartRef = ref<HTMLElement[]>([])
 
 // Sample data
 // I will stick with this sample data because non of the endpoint can be trusted with this response because I quickly hit the limit. Plus, Alpha do not return any error in fact.
@@ -48,11 +48,12 @@ const chartData = {
 }
 
 const chartjsINIT = () => {
-  const ctx = (chartRef.value || document.getElementById('chart-canvas')) as Array<HTMLElement>
+  const ctx = chartRef.value
 
   if (ctx) {
     for (let i = 0; i < ctx.length; i++) {
-      new Chart(ctx[i].getContext('2d'), {
+      const cv = ctx[i]
+      new Chart(cv[i].getContext('2d'), {
         type: 'line',
         data: chartData,
         options: {
