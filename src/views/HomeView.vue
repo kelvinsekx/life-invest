@@ -48,7 +48,7 @@ const chartData = {
 }
 
 const chartjsINIT = () => {
-  const ctx = chartRef.value || document.getElementById('chart-canvas')
+  const ctx = (chartRef.value || document.getElementById('chart-canvas')) as Array<HTMLElement>
 
   if (ctx) {
     for (let i = 0; i < ctx.length; i++) {
