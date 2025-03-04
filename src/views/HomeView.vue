@@ -1,13 +1,36 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Modal from '../components/CxModal.vue'
 import CxCard from '../components/CxCard.vue'
 import IconPlus from '../components/icons/IconPlus.vue'
+import IconTrendingDown from '../components/icons/IconTrendingDown.vue'
+import IconTrendingUp from '../components/icons/IconTrendingUp.vue'
+
+import { useStocksStore } from '../stores/store.ts'
 
 const showModal = ref(false)
 const activeTab = ref(0)
+const stocks = ref({})
+const activeKey = ref('')
+
+const loading = ref(false)
 
 const tabs = ['stocks', 'watchlists']
+
+const store = useStocksStore()
+
+onMounted(async () => {
+  try {
+    loading.value = true
+    await store.fetchStocks()
+    // await store.fetchTrends()
+    stocks.value = store.stocks
+  } catch (error) {
+    console.error('Error fetching stocks:', error)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <template>
@@ -44,54 +67,94 @@ const tabs = ['stocks', 'watchlists']
               <th scope="col" class="px-6 py-3 bg-gray-50 font-medium">Change</th>
               <th scope="col" class="px-6 py-3 bg-gray-50 font-medium">Change Percent</th>
               <th scope="col" class="px-6 py-3 bg-gray-50 font-medium">Market Cap</th>
-              <th scope="col" class="px-6 py-3 bg-gray-50 font-medium">P/E</th>
             </tr>
           </thead>
-          <tbody>
+
+          <tbody v-if="!loading">
             <tr
-              v-for="e in 5"
-              :key="e"
+              v-for="(stock, key) in stocks"
+              :key="key"
               class="border-b border-[#888]/20 hover:bg-[#888]/30"
-              @click="showModal = !showModal"
+              @click="
+                () => {
+                  showModal = !showModal
+                  activeKey = key
+                }
+              "
             >
               <th scope="row" class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">
-                AAPL
+                {{ stocks[key].symbol }}
               </th>
-              <td class="px-6 py-4">Apple Inc</td>
-              <td class="px-6 py-4">138.2</td>
-              <td class="px-6 py-4">$2999</td>
-              <td class="px-6 py-4">2333 B</td>
-              <td class="px-6 py-4">$2999</td>
-              <td class="px-6 py-4">$2999</td>
-              <td class="px-6 py-4">30.2</td>
+              <td class="px-6 py-4">{{ stocks[key].name }}</td>
+              <td class="px-6 py-4">{{ stocks[key].price }}</td>
+              <td class="px-6 py-4">2333</td>
+              <td class="px-6 py-4 flex gap-1">
+                {{ stocks[key].change }} <IconTrendingUp v-if="stocks[key].change > 0" />
+                <IconTrendingDown v-else />
+              </td>
+              <td
+                class="px-6 py-4 -z-10"
+                :class="{
+                  'bg-red-200/50': stocks[key].changePercent < 0,
+                  'bg-green-200/50': stocks[key].changePercent > 0,
+                }"
+              >
+                {{ stocks[key].changePercent }}
+              </td>
+              <td class="px-6 py-4">
+                {{ Number(stocks[key].marketCap / 1000).toFixed(2) }}
+                <span class="text-[#222]">B</span>
+              </td>
             </tr>
           </tbody>
         </table>
+        <div v-if="loading == true" class="text-black text-3xl">loading..</div>
       </div>
     </div>
-    <div v-else>
-      <CxCard>
-        <p class="text-xl font-semibold tracking-tight">AAPL</p>
+    <div id="waitlist-section" class="gap-2 flex justify-center items-center" v-else>
+      <div v-if="Object.keys(store.waitlists).length < 1">
+        <div class="mt-4 p-6 border rounded-lg bg-[#ccc]/20 text-center">
+          <p class="text-[#555]">
+            Your watchlist is empty. <br />
+            click a stock from the stocks tab, see the details and add to waitlist.
+          </p>
+        </div>
+      </div>
+      <CxCard v-for="(waitlist, key) in store.waitlists" :key="key">
+        <div class="flex justify-between">
+          <p class="text-xl font-semibold tracking-tight">{{ waitlist.symbol }}</p>
+          <button
+            class="bg-red-500 text-white rounded-md px-2 py-1"
+            @click="store.deleteStockFromWatchlist(waitlist.symbol)"
+          >
+            delete
+          </button>
+        </div>
         <div class="flex justify-between items-center">
           <div>
-            <span class="text-3xl tracking-tighter font-semibold">$233</span>
-            <div class="text-green-400">
-              <span>344 </span>
-              <span>( 344% )</span>
+            <span class="text-3xl tracking-tighter font-semibold">${{ waitlist.price }}</span>
+            <div
+              :class="{
+                'text-green-400': waitlist.change > 0,
+                'text-red-400': waitlist.change < 0,
+              }"
+            >
+              <span>{{ waitlist.change }} </span>
+              <span>( {{ waitlist.changePercent }}% )</span>
             </div>
           </div>
         </div>
         <div class="flex gap-8 font-semibold">
           <div class="w-[7rem]">
             <p class="flex flex-col">
-              <span class="text-[#999] font-normal tracking-tight">Open</span>
-              <span class="text-[#222]">186.5</span>
+              <span class="text-[#999] font-normal tracking-tight">CAP</span>
+              <span class="text-[#222]">${{ Number(waitlist.marketCap / 1000).toFixed(2) }} B</span>
             </p>
           </div>
           <div class="w-[8rem]">
             <p class="flex flex-col">
-              <span class="text-[#999] font-normal tracking-tight">Previous close</span>
-              <span class="text-[#222]">186.5</span>
+              <span class="text-[#999] font-normal tracking-tight">Co full name</span>
+              <span class="text-[#222]">{{ waitlist.name }}</span>
             </p>
           </div>
         </div>
@@ -103,11 +166,19 @@ const tabs = ['stocks', 'watchlists']
       <div class="w-full space-y-5">
         <div class="space-y-2">
           <div class="flex flex-col">
-            <span class="text-3xl font-bold tracking-tight">AAPL</span>
-            <span class="text-[#222]">Apple Inc.</span>
+            <span class="text-3xl font-bold tracking-tight">{{ stocks[activeKey].symbol }}</span>
+            <span class="text-[#222]">{{ stocks[activeKey].name }}.</span>
+          </div>
+          <div
+            v-if="store.waitlists[activeKey]?.symbol"
+            class="border border-[#777]/60 rounded-md px-3 font-normal text-base text-[#ccc] flex py-2 w-fit"
+          >
+            <IconPlus /> Added to waitlist
           </div>
           <button
+            v-if="!store.waitlists[activeKey]?.symbol"
             class="border border-[#555]/60 rounded-md px-3 font-normal text-base text-[#555] flex py-2"
+            @click="store.addStockToWatchlist(stocks[activeKey].symbol)"
           >
             <IconPlus class="text-[#555] stroke-1" /> Add to Watchlist
           </button>
@@ -117,54 +188,25 @@ const tabs = ['stocks', 'watchlists']
             <p class="text-xl font-semibold tracking-tight">Pricing Information</p>
             <div class="flex justify-between items-center">
               <div>
-                <span class="text-5xl tracking-tighter font-semibold">$233</span>
-                <div class="text-green-400">
-                  <span>344 </span>
-                  <span>( 344% )</span>
+                <span class="text-5xl tracking-tighter font-semibold"
+                  >${{ stocks[activeKey].price }}</span
+                >
+                <div
+                  :class="{
+                    'text-red-400': stocks[activeKey].change < 0,
+                    'text-green-400': stocks[activeKey].change > 0,
+                  }"
+                >
+                  <span>{{ stocks[activeKey].change }} </span>
+                  <span>( {{ stocks[activeKey].changePercent }} )</span>
                 </div>
               </div>
               <div class="flex flex-col">
                 <span class="text-[#999] font-normal tracking-tight">Market Cap</span>
-                <span>$2333 B</span>
-              </div>
-            </div>
-            <div class="grid grid-cols-2 gap-y-2 font-semibold">
-              <div class="w-[10rem]">
-                <p class="flex flex-col">
-                  <span class="text-[#999] font-normal tracking-tight">Open</span>
-                  <span class="text-[#222]">186.5</span>
-                </p>
-              </div>
-              <div class="w-[20rem]">
-                <p class="flex flex-col">
-                  <span class="text-[#999] font-normal tracking-tight">Previous close</span>
-                  <span class="text-[#222]">186.5</span>
-                </p>
-              </div>
-              <div class="w-[20rem]">
-                <p class="flex flex-col">
-                  <span class="text-[#999] font-normal tracking-tight">Day's Range</span>
-                  <span class="text-[#222]">186.5</span>
-                </p>
-              </div>
-              <div class="w-[20rem]">
-                <p class="flex flex-col">
-                  <span class="text-[#999] font-normal tracking-tight">52 week range</span>
-                  <span class="text-[#222]">186.5</span>
-                </p>
-              </div>
-            </div>
-          </CxCard>
-          <CxCard>
-            <p class="text-xl font-semibold tracking-tight">Information Information</p>
-            <div class="flex justify-between items-center">
-              <div class="flex flex-col">
-                <span class="text-[#999] font-normal tracking-tight">Volume</span>
-                <span>$2333344</span>
-              </div>
-              <div class="flex flex-col">
-                <span class="text-[#999] font-normal tracking-tight">Av. Volume</span>
-                <span>$2333 B</span>
+                <span
+                  >${{ Number(stocks[activeKey].marketCap / 1000).toFixed(2) }}
+                  <span class="text-[#222]">B</span></span
+                >
               </div>
             </div>
             <div class="grid grid-cols-2 gap-y-2 font-semibold">
@@ -195,10 +237,10 @@ const tabs = ['stocks', 'watchlists']
             </div>
           </CxCard>
         </div>
-        <CxCard>
+        <!-- <CxCard>
           <p>Price Trend</p>
           <div class="h-[10rem]"></div>
-        </CxCard>
+        </CxCard> -->
       </div>
     </Modal>
   </teleport>
