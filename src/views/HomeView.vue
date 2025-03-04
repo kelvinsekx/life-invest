@@ -190,18 +190,19 @@ onMounted(async () => {
                 <td class="px-6 py-4"><canvas id="chart-canvas" ref="chartRef"></canvas></td>
                 <td class="px-6 py-4">
                   <span className="flex justify-center items-center h-full gap-1"
-                    >{{ stocks[key].change }} <IconTrendingUp v-if="stocks[key].change > 0" />
+                    >{{ stocks[key].change }}
+                    <IconTrendingUp v-if="Number(stocks[key].change) > 0" />
                     <IconTrendingDown v-else
                   /></span>
                 </td>
                 <td
                   class="px-6 py-4 -z-10"
                   :class="{
-                    'bg-red-200/50': stocks[key].changePercent < 0,
-                    'bg-green-200/50': stocks[key].changePercent > 0,
+                    'bg-red-200/50': Number(stocks[key].change) < 0,
+                    'bg-green-200/50': Number(stocks[key].change) > 0,
                   }"
                 >
-                  {{ stocks[key].changePercent }}
+                  {{ Number(stocks[key].change) }}
                 </td>
                 <td class="px-6 py-4">
                   {{ Number(stocks[key].marketCap / 1000).toFixed(2) }}
@@ -238,8 +239,8 @@ onMounted(async () => {
             <span class="text-3xl tracking-tighter font-semibold">${{ waitlist.price }}</span>
             <div
               :class="{
-                'text-green-400': waitlist.change > 0,
-                'text-red-400': waitlist.change < 0,
+                'text-green-400': Number(waitlist.change) > 0,
+                'text-red-400': Number(waitlist.change) < 0,
               }"
             >
               <span>{{ waitlist.change }} </span>
