@@ -145,7 +145,7 @@ onMounted(async () => {
       <div>
         <h1 class="text-2xl font-semibold tracking-tight">Popular Stocks</h1>
       </div>
-      <div class="relative overflow-x-auto">
+      <div class="relative max-w-full max-md:overflow-x-scroll">
         <table class="w-full text-sm text-left rtl:text-right text-[#333]">
           <thead class="text-base text-[#444]">
             <tr>

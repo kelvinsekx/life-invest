@@ -15,7 +15,7 @@ const store = useStocksStore()
       <h1 class="text-4xl font-bold mb-6 tracking-tight">Stock Tracker</h1>
     </header>
 
-    <form class="relative flex gap-2">
+    <form class="relative flex gap-2" @submit.prevent="">
       <div class="relative flex-1">
         <input
           type="text"
