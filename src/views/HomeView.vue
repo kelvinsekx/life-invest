@@ -205,7 +205,7 @@ onMounted(async () => {
                   {{ Number(stocks[key].change) }}
                 </td>
                 <td class="px-6 py-4">
-                  {{ Number(stocks[key].marketCap / 1000).toFixed(2) }}
+                  {{ (Number(stocks[key].marketCap) / 1000).toFixed(2) }}
                   <span class="text-[#222]">B</span>
                 </td>
               </tr>
@@ -297,18 +297,18 @@ onMounted(async () => {
                 >
                 <div
                   :class="{
-                    'text-red-400': stocks[activeKey].change < 0,
-                    'text-green-400': stocks[activeKey].change > 0,
+                    'text-red-400': Number(stocks[activeKey].change) < 0,
+                    'text-green-400': Number(stocks[activeKey].change) > 0,
                   }"
                 >
-                  <span>{{ stocks[activeKey].change }} </span>
+                  <span>{{ Number(stocks[activeKey].change) }} </span>
                   <span>( {{ stocks[activeKey].changePercent }} )</span>
                 </div>
               </div>
               <div class="flex flex-col">
                 <span class="text-[#999] font-normal tracking-tight">Market Cap</span>
                 <span
-                  >${{ Number(stocks[activeKey].marketCap / 1000).toFixed(2) }}
+                  >${{ (Number(stocks[activeKey].marketCap) / 1000).toFixed(2) }}
                   <span class="text-[#222]">B</span></span
                 >
               </div>
