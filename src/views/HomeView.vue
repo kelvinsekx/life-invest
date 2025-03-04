@@ -50,8 +50,8 @@ const chartData = {
 const chartjsINIT = () => {
   const ctx = chartRef.value || document.getElementById('chart-canvas')
 
-  if (!ctx) {
-    for (let i = 0; i < ctx?.length; i++) {
+  if (ctx) {
+    for (let i = 0; i < ctx.length; i++) {
       new Chart(ctx[i].getContext('2d'), {
         type: 'line',
         data: chartData,
