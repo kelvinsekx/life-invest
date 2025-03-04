@@ -252,7 +252,9 @@ onMounted(async () => {
           <div class="w-[7rem]">
             <p class="flex flex-col">
               <span class="text-[#999] font-normal tracking-tight">CAP</span>
-              <span class="text-[#222]">${{ Number(waitlist.marketCap / 1000).toFixed(2) }} B</span>
+              <span class="text-[#222]"
+                >${{ (Number(waitlist.marketCap) / 1000).toFixed(2) }} B</span
+              >
             </p>
           </div>
           <div class="w-[8rem]">
