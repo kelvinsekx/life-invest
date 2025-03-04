@@ -49,54 +49,56 @@ const chartData = {
 const chartjsINIT = () => {
   const ctx = chartRef.value || document.getElementById('chart-canvas')
 
-  for (let i = 0; i < ctx?.length; i++) {
-    new Chart(ctx[i].getContext('2d'), {
-      type: 'line',
-      data: chartData,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          x: {
-            grid: {
-              display: false,
-            },
-            title: {
-              display: false,
-              text: 'Date',
-            },
-            ticks: {
-              display: false,
-            },
-          },
-          y: {
-            grid: {
-              display: false,
-            },
-            title: {
-              display: false,
-              text: 'Price ($)',
-            },
-            ticks: {
-              display: false,
-            },
-            beginAtZero: false,
-          },
-        },
-        plugins: {
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                return `Price: $${context.parsed.y.toFixed(2)}`
+  if (!ctx) {
+    for (let i = 0; i < ctx?.length; i++) {
+      new Chart(ctx[i].getContext('2d'), {
+        type: 'line',
+        data: chartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              grid: {
+                display: false,
+              },
+              title: {
+                display: false,
+                text: 'Date',
+              },
+              ticks: {
+                display: false,
               },
             },
+            y: {
+              grid: {
+                display: false,
+              },
+              title: {
+                display: false,
+                text: 'Price ($)',
+              },
+              ticks: {
+                display: false,
+              },
+              beginAtZero: false,
+            },
           },
-          legend: {
-            display: false,
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  return `Price: $${context.parsed.y.toFixed(2)}`
+                },
+              },
+            },
+            legend: {
+              display: false,
+            },
           },
         },
-      },
-    })
+      })
+    }
   }
 }
 
