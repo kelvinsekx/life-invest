@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import CxInput from './components/CxInput.vue'
 import IconSearch from './components/icons/IconSearch.vue'
+
+const search = ref('')
 </script>
 
 <template>
@@ -12,11 +13,13 @@ import IconSearch from './components/icons/IconSearch.vue'
 
     <form class="relative flex gap-2">
       <div class="relative flex-1">
-        <CxInput
+        <input
           type="text"
+          class="w-full text-[#444] placeholder:text-[#444] border rounded-md px-2 py-3 flex h-10 border-[#444] bg-transparent ring-[#444] focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 outline-none pr-10"
           placeholder="Search by ticker symbol (e.g., AAPL, MSFT, GOOGL)"
           value=""
-          class="pr-10"
+          v-model="search"
+          @input="customersStore.setSearchQuery(search)"
         />
       </div>
       <button
