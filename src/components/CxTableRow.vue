@@ -16,7 +16,7 @@ defineProps({
 
 // for humans: pardon all these messy emits. The fact that vue's props can't take a callback is horrible
 const emits = defineEmits(['toggleActiveRow'])
-const emitActiveRow = (key: string) => emits('toggleActiveRow', { key })
+const emitActiveRow = (key: string | number) => emits('toggleActiveRow', { key })
 </script>
 <template>
   <tr
