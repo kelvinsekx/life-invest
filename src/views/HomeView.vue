@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import type { StockType } from '@/types/stock'
 import Chart from 'chart.js/auto' // I'll let vite handle bundle sizes, I do not have much time to that here
 
 import Modal from '../components/CxModal.vue'
@@ -15,7 +16,7 @@ import { useStocksStore } from '../stores/store.ts'
 /** local states */
 const showModal = ref(false)
 const activeTab = ref(0)
-const stocks = ref({})
+const stocks = ref<{ [key: string]: StockType }>({})
 const activeKey = ref('')
 
 const loading = ref(false)
