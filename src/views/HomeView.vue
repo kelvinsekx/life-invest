@@ -52,8 +52,8 @@ const chartjsINIT = () => {
 
   if (ctx) {
     for (let i = 0; i < ctx.length; i++) {
-      const cv = ctx[i]
-      new Chart(cv[i].getContext('2d'), {
+      const cv = ctx[i] as HTMLCanvasElement
+      new Chart(cv.getContext('2d'), {
         type: 'line',
         data: chartData,
         options: {
