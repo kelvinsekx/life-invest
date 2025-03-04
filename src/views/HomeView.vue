@@ -167,7 +167,7 @@ onMounted(async () => {
                     activeKey = key
                   }
                 "
-                :active-index="activeKey"
+                :active-index="activeKey.toString()"
               />
             </template>
             <template v-if="!store.searchQuery">
