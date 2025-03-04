@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import Chart from 'chart.js/auto' // I'll let vite handle bundle sizes, I do not have much time to that here
 
 import Modal from '../components/CxModal.vue'
 import CxCard from '../components/CxCard.vue'
@@ -24,6 +25,86 @@ const tabs = ['stocks', 'watchlists']
 
 const store = useStocksStore()
 
+/** chartjs stuff */
+const chartRef = ref(null)
+
+// Sample data
+// I will stick with this sample data because non of the endpoint can be trusted with this response because I quickly hit the limit. Plus, Alpha do not return any error in fact.
+const chartData = {
+  labels: ['2023-01-01', '2023-02-01', '2023-03-01', '2023-04-01', '2023-05-01', '2023-06-01'],
+  datasets: [
+    {
+      label: 'Closing Price',
+      data: [150.25, 155.5, 160.75, 158.3, 170.45, 180.6],
+      borderColor: '#2563eb',
+      borderWidth: 2,
+      fill: true,
+      tension: 0.4,
+      pointRadius: 4,
+      pointBackgroundColor: '#2563eb',
+    },
+  ],
+}
+
+const chartjsINIT = () => {
+  let ctx = null
+  if (chartRef.value) {
+    const canvas = chartRef.value || document.getElementById('chart-canvas')
+
+    ctx = canvas
+  }
+
+  for (let i = 0; i < ctx.length; i++) {
+    new Chart(ctx[i].getContext('2d'), {
+      type: 'line',
+      data: chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            grid: {
+              display: false,
+            },
+            title: {
+              display: false,
+              text: 'Date',
+            },
+            ticks: {
+              display: false,
+            },
+          },
+          y: {
+            grid: {
+              display: false,
+            },
+            title: {
+              display: false,
+              text: 'Price ($)',
+            },
+            ticks: {
+              display: false,
+            },
+            beginAtZero: false,
+          },
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                return `Price: $${context.parsed.y.toFixed(2)}`
+              },
+            },
+          },
+          legend: {
+            display: false,
+          },
+        },
+      },
+    })
+  }
+}
+
 onMounted(async () => {
   try {
     loading.value = true
@@ -34,6 +115,9 @@ onMounted(async () => {
     console.error('Error fetching stocks:', error)
   } finally {
     loading.value = false
+    setTimeout(() => {
+      chartjsINIT()
+    }, 1100)
   }
 })
 </script>
@@ -105,10 +189,12 @@ onMounted(async () => {
                 </th>
                 <td class="px-6 py-4">{{ stocks[key].name }}</td>
                 <td class="px-6 py-4">{{ stocks[key].price }}</td>
-                <td class="px-6 py-4">2333</td>
-                <td class="px-6 py-4 flex gap-1">
-                  {{ stocks[key].change }} <IconTrendingUp v-if="stocks[key].change > 0" />
-                  <IconTrendingDown v-else />
+                <td class="px-6 py-4"><canvas id="chart-canvas" ref="chartRef"></canvas></td>
+                <td class="px-6 py-4">
+                  <span className="flex justify-center items-center h-full gap-1"
+                    >{{ stocks[key].change }} <IconTrendingUp v-if="stocks[key].change > 0" />
+                    <IconTrendingDown v-else
+                  /></span>
                 </td>
                 <td
                   class="px-6 py-4 -z-10"
@@ -256,11 +342,18 @@ onMounted(async () => {
             </div>
           </CxCard>
         </div>
-        <!-- <CxCard>
-          <p>Price Trend</p>
-          <div class="h-[10rem]"></div>
-        </CxCard> -->
       </div>
     </Modal>
   </teleport>
 </template>
+
+<style scoped>
+#chart-canvas {
+  height: 100px;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto;
+  padding: 5px;
+  border-radius: 8px;
+}
+</style>

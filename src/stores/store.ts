@@ -64,11 +64,13 @@ export const useStocksStore = defineStore('stock', () => {
           `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${key}&apikey=${import.meta.env.VITE_FINNHUB_API_KEY}`,
         )
           .then((response) => response.json())
-          .then((res) => res['Time Series (Daily)'])
+          .then((res) => {
+            return res['Time Series (Daily)']
+          })
           .then((data) => {
             trendsResults.value[key] = data
           })
-          .then(() => console.log(trendsResults))
+          .then(() => console.log(trendsResults.value))
       }
     } catch (error) {
       console.error('Error fetching data:', error)

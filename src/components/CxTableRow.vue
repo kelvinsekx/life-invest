@@ -29,7 +29,7 @@ const emitActiveRow = (key: string) => emits('toggleActiveRow', { key })
     </th>
     <td class="px-6 py-4">{{ stock.name }}</td>
     <td class="px-6 py-4">{{ stock.price }}</td>
-    <td class="px-6 py-4">2333</td>
+    <td class="px-6 py-4">N/A</td>
     <td class="px-6 py-4 flex gap-1">
       {{ stock.change }} <IconTrendingUp v-if="stock.change > 0" />
       <IconTrendingDown v-else />
