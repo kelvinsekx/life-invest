@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PropType } from 'vue'
+import type { PropType } from 'vue'
 import type { StockType } from '@/types/stock'
 /** icons */
 import IconTrendingDown from '../components/icons/IconTrendingDown.vue'
