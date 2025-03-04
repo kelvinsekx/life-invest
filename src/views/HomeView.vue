@@ -17,7 +17,7 @@ import { useStocksStore } from '../stores/store.ts'
 const showModal = ref(false)
 const activeTab = ref(0)
 const stocks = ref<{ [key: string]: StockType }>({})
-const activeKey = ref('')
+const activeKey = ref<number | string>('')
 
 const loading = ref(false)
 
