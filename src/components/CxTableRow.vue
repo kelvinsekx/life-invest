@@ -32,20 +32,20 @@ const emitActiveRow = (key: string | number) => emits('toggleActiveRow', { key }
     <td class="px-6 py-4">{{ stock.price }}</td>
     <td class="px-6 py-4">N/A</td>
     <td class="px-6 py-4 flex gap-1">
-      {{ stock.change }} <IconTrendingUp v-if="stock.change > 0" />
+      {{ stock.change }} <IconTrendingUp v-if="Number(stock.change) > 0" />
       <IconTrendingDown v-else />
     </td>
     <td
       class="px-6 py-4 -z-10"
       :class="{
-        'bg-red-200/50': stock.changePercent < 0,
-        'bg-green-200/50': stock.changePercent > 0,
+        'bg-red-200/50': Number(stock.changePercent) < 0,
+        'bg-green-200/50': Number(stock.changePercent) > 0,
       }"
     >
       {{ stock.changePercent }}
     </td>
     <td class="px-6 py-4">
-      {{ Number(stock.marketCap / 1000).toFixed(2) }}
+      {{ (Number(stock.marketCap) / 1000).toFixed(2) }}
       <span class="text-[#222]">B</span>
     </td>
   </tr>
