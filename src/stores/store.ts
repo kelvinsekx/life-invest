@@ -2,16 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 import { pickFilters } from './constants'
-
-type StockType = {
-  symbol: string
-  name: string
-  price: string
-  marketCap: string
-  change: string
-  changePercent: string
-  logo: string
-}
+import type { StockType } from '@/types/stock'
 
 // using composition setup instead of options with state|actions|getters
 
@@ -20,7 +11,10 @@ type StockType = {
 export const useStocksStore = defineStore('stock', () => {
   const stocks = ref<{ [key: string]: StockType }>({})
   const waitlists = ref<{ [key: string]: StockType }>({})
+  const filterResults = ref<{ [key: string]: StockType }>({})
   const searchQuery = ref('')
+
+  let timeoutID: number | null = null
 
   const addStockToWatchlist = function (ticker: string) {
     waitlists.value[ticker] = stocks.value[ticker]
@@ -100,9 +94,32 @@ export const useStocksStore = defineStore('stock', () => {
     delete waitlists.value[ticker]
   }
 
+  /**to avoid the api too many times ( we are using free and limited version), this search experience would behave like filter */
+  const filteredStocks = () => {
+    const query = searchQuery.value.toLowerCase()
+    if (!query) return stocks.value
+
+    return Object.fromEntries(
+      Object.entries(stocks.value).filter(([key, value]) => {
+        return key.toLowerCase().includes(query) || value.symbol.toLowerCase().includes(query)
+      }),
+    )
+  }
+
   const setSearchQuery = function (query: string) {
     searchQuery.value = query
-    console.log(query)
+
+    debounceSimulator()
+
+    function debounceSimulator() {
+      if (timeoutID != null) {
+        clearInterval(timeoutID)
+      }
+
+      timeoutID = setTimeout(() => {
+        filterResults.value = filteredStocks()
+      }, 1000)
+    }
   }
 
   return {
@@ -114,5 +131,6 @@ export const useStocksStore = defineStore('stock', () => {
     searchQuery,
     fetchStocks,
     fetchTrends,
+    filterResults,
   }
 })

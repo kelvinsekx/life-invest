@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+
 import Modal from '../components/CxModal.vue'
 import CxCard from '../components/CxCard.vue'
+import CxTableRow from '../components/CxTableRow.vue'
+/** icons */
 import IconPlus from '../components/icons/IconPlus.vue'
 import IconTrendingDown from '../components/icons/IconTrendingDown.vue'
 import IconTrendingUp from '../components/icons/IconTrendingUp.vue'
 
 import { useStocksStore } from '../stores/store.ts'
 
+/** local states */
 const showModal = ref(false)
 const activeTab = ref(0)
 const stocks = ref({})
@@ -15,6 +19,7 @@ const activeKey = ref('')
 
 const loading = ref(false)
 
+/** component logic */
 const tabs = ['stocks', 'watchlists']
 
 const store = useStocksStore()
@@ -71,41 +76,55 @@ onMounted(async () => {
           </thead>
 
           <tbody v-if="!loading">
-            <tr
-              v-for="(stock, key) in stocks"
-              :key="key"
-              class="border-b border-[#888]/20 hover:bg-[#888]/30"
-              @click="
-                () => {
-                  showModal = !showModal
-                  activeKey = key
-                }
-              "
-            >
-              <th scope="row" class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">
-                {{ stocks[key].symbol }}
-              </th>
-              <td class="px-6 py-4">{{ stocks[key].name }}</td>
-              <td class="px-6 py-4">{{ stocks[key].price }}</td>
-              <td class="px-6 py-4">2333</td>
-              <td class="px-6 py-4 flex gap-1">
-                {{ stocks[key].change }} <IconTrendingUp v-if="stocks[key].change > 0" />
-                <IconTrendingDown v-else />
-              </td>
-              <td
-                class="px-6 py-4 -z-10"
-                :class="{
-                  'bg-red-200/50': stocks[key].changePercent < 0,
-                  'bg-green-200/50': stocks[key].changePercent > 0,
-                }"
+            <template v-if="store.searchQuery">
+              <CxTableRow
+                :stocks="store.filterResults"
+                @toggle-active-row="
+                  ({ key }) => {
+                    showModal = !showModal
+                    activeKey = key
+                  }
+                "
+                :active-index="activeKey"
+              />
+            </template>
+            <template v-if="!store.searchQuery">
+              <tr
+                v-for="(stock, key) in stocks"
+                :key="key"
+                class="border-b border-[#888]/20 hover:bg-[#888]/30"
+                @click="
+                  () => {
+                    showModal = !showModal
+                    activeKey = key
+                  }
+                "
               >
-                {{ stocks[key].changePercent }}
-              </td>
-              <td class="px-6 py-4">
-                {{ Number(stocks[key].marketCap / 1000).toFixed(2) }}
-                <span class="text-[#222]">B</span>
-              </td>
-            </tr>
+                <th scope="row" class="px-6 py-4 font-semibold text-gray-900 whitespace-nowrap">
+                  {{ stocks[key].symbol }}
+                </th>
+                <td class="px-6 py-4">{{ stocks[key].name }}</td>
+                <td class="px-6 py-4">{{ stocks[key].price }}</td>
+                <td class="px-6 py-4">2333</td>
+                <td class="px-6 py-4 flex gap-1">
+                  {{ stocks[key].change }} <IconTrendingUp v-if="stocks[key].change > 0" />
+                  <IconTrendingDown v-else />
+                </td>
+                <td
+                  class="px-6 py-4 -z-10"
+                  :class="{
+                    'bg-red-200/50': stocks[key].changePercent < 0,
+                    'bg-green-200/50': stocks[key].changePercent > 0,
+                  }"
+                >
+                  {{ stocks[key].changePercent }}
+                </td>
+                <td class="px-6 py-4">
+                  {{ Number(stocks[key].marketCap / 1000).toFixed(2) }}
+                  <span class="text-[#222]">B</span>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
         <div v-if="loading == true" class="text-black text-3xl">loading..</div>
